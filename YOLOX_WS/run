@@ -1,0 +1,17 @@
+#! /bin/bash
+
+# yolox package is in the local directory
+[ "$PYTHONPATH" = "" ] && export PYTHONPATH=:
+
+input=$1
+shift
+mode="s"
+[ "$1" == "s" -o "$1" == "m" -o "$1" == "l" -o "$1" == "x" -o "$1" == "nano" -o "$1" == "tiny" -o "$1" == "darknet" ] && mode="$1" && shift
+
+
+if [[ "$input" == "evaluate" ]]; then
+    python3 -m yolox.tools.eval -n yolox-${mode} -c weights/yolox_${mode}.pth -b 1 --conf 0.001 "$@" || exit 1
+else
+    ${PYTHON_BIN:-python3} -m yolox.tools.demo "" -n yolox-${mode} -c ./weights/yolox_${mode}.pth --path "$input" --conf 0.25 --nms 0.45 --tsize 640 --device cpu "$@" || exit 1
+fi
+
